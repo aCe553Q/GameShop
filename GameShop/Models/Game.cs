@@ -10,8 +10,13 @@ namespace GameShop.Models
         public int Id { get; set; }
         
         [Required]
-        [MaxLength(20)]
+        [MaxLength(40)]
         public string? GameName { get; set; }
+
+        [Required]
+        [MaxLength(40)]
+        public string? AuthorName { get; set; }
+
         [Required]
         public double Price { get; set; }
         public string? Image { get; set; }
