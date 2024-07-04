@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS1998: Metoda asynchroniczna nie zawiera operatorów „await” i zostanie uruchomiona synchronicznie
+dotnet_diagnostic.CS1998.severity = none

@@ -1,3 +1,4 @@
+using GameShop;
 using GameShop.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.Sign
     .AddDefaultUI()
     .AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddTransient<IHomeRepository, HomeRepository>();
 
 var app = builder.Build();
 /*

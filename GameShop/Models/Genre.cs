@@ -11,7 +11,7 @@ namespace GameShop.Models
             public int Id { get; set; }
 
             [Required]
-            [MaxLength(20)]
+            [MaxLength(40)]
             public string GenreName { get; set; }
             public List<Game> Games { get; set; }
         }
