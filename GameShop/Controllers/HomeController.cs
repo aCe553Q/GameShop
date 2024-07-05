@@ -23,7 +23,9 @@ namespace GameShop.Controllers
             GameDisplayModel gameModel = new GameDisplayModel
             {
                 Games = games,
-                Genres = genres
+                Genres = genres,
+                STerm = sterm,
+                GenreId = genreId
             };
             return View(gameModel);
         }
