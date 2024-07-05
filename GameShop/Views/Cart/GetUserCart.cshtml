@@ -1,0 +1,70 @@
+﻿@model ShoppingCart
+@{
+    ViewData["Title"] = "GetUserCart";
+}
+
+<div style="width: 90%; margin:auto">
+    @if (Model != null && Model.CartDetails != null && Model.CartDetails.Count > 0)
+    {
+        <h3>Mój koszyk</h3>
+
+        <table class="table table-striped">
+            <tr>
+                <th>Gra</th>
+                <th>Zdjęcie</th>
+                <th>Gatunek</th>
+                <th>Cena za sztuke PLN</th>
+                <th>Cena końcowa</th>
+                <th>W sumie</th>
+
+                
+
+            </tr>
+            @foreach (var item in Model.CartDetails)
+            {
+                <tr>
+
+                    <td>@item.Game.GameName</td>
+                    <td>
+                        @if(string.IsNullOrEmpty(item.Game.Image))
+                        {
+                            <img src="/css/img/noimg.jpg" style="width:80px; height:100px;" />
+                        }else
+                        {
+                            <img src="/images/@item.Game.Image" style="width:80px; height:100px;" />
+                        }
+                    </td>
+                    <td>@item.Game.Genre.GenreName</td>
+                    <td>@item.Game.Price</td>
+                    <td>@item.Game.Price PLN * @item.Quantity Sztuk</td>
+                    <td>@(item.Game.Price * item.Quantity) PLN </td>
+                    <td>
+                        <a class="btn btn-info" href="/Cart/AddItem?GameId=@item.GameId&&redirect=1">+</a>
+                        <a class="btn btn-info" href="/Cart/RemoveItem?GameId=@item.GameId">-</a>
+                    </td>
+                </tr>
+            }
+
+
+
+    </table>
+
+    <div class="my-2">
+        <h5>Łącznie(PLN):</h5> 
+        @(Model.CartDetails.Select(item => item.Game.Price * item.Quantity).Sum())
+    </div>
+
+        <div class="my-2">
+            <a class="btn btn-primary" href="#">
+                Płatność
+            </a>
+
+        </div>
+
+    }else
+    {
+        <h5>Koszyk jest pusty</h5>
+    }
+
+</div>
+

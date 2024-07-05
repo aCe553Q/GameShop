@@ -150,6 +150,38 @@ namespace GameShop.Repositories
             return data.Count;
         }
 
+        public async Task DoCheckout()
+        {
+            using var transaction = _db.Database.BeginTransaction();
+            try
+            {
+                //order orderdetail
+                //remove data cartdetail
+                var userId = GetUserId();
+                if(string.IsNullOrEmpty(userId) )               
+                    throw new Exception("User is not logged");
+                    var cart = await GetCart(userId);
+                    if(cart is null)
+                    throw new Exception("Invalid Cart");
+                    var cartDetail = _db.CartDetails
+                                    .Where(a=> a.ShoppingCartId == cart.Id).ToList();
+                if(cartDetail.Count == 0)
+                    throw new Exception("Cart is empty");
+                var order = new Order
+                {
+                    UserId = userId,
+                    CreateDate = DateTime.Now,
+                    OrderStatus = 1, //pending order
+                };
+                    
+                
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
         private string GetUserId()
         {
             var principal = _httpContextAccessor.HttpContext.User;

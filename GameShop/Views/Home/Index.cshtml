@@ -28,7 +28,7 @@
 
   <div class="col-12">
     <button type="submit" class="btn btn-primary">Szukaj</button>
-    <a href="/Home/Index" class="btn btn-dark">Reset</a>
+    <a href="/Home/Index" class="btn btn-dark">Resetuj</a>
   </div>
 </form>
 
@@ -74,7 +74,6 @@
 
 
                     var result = await response.json();
-                    console.log(result);
                     var cartCountElements = document.getElementById("cartCount");
                     cartCountElements.innerHTML = result;
                 }

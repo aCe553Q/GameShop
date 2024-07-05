@@ -17,7 +17,7 @@ namespace GameShop.Repositories
         {
             return await _db.Genres.ToListAsync(); 
         }
-
+        
 
         // sTerm searchTerm
         public async Task<IEnumerable<Game>> GetGames(string sTerm="", int genreId = 0)

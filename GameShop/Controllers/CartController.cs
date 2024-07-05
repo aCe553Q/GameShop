@@ -40,5 +40,16 @@ namespace GameShop.Controllers
             int cartItem = await _cartRepository.GetCartItemCount();
             return Ok(cartItem);
         }
+
+    /*    public async Task<IActionResult> Checkout()
+        {
+            bool isCheckedOut = await _cartRepository.DoCheckout()
+                if(isCheckedOut)
+                {
+                throw new Exception("Server side");
+                return RedirectToAction("Index", "Home");
+                }
+        }
+    */
     }
 }
