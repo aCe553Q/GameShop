@@ -56,8 +56,38 @@
         Autor: @game.AuthorName <br />
         Cena: @game.Price PLN
         </p>
-        <a href="#" class="btn btn-primary">Dodaj do koszyka</a>
+        <button type="button" onclick="add(@game.Id)" class="btn btn-primary">Dodaj do koszyka</button>
     </div>
 </div>
     }
 </div>
+@section Scripts
+{
+    <script>
+        async function add(gameId)
+        {
+            try 
+            {
+                var response = await fetch(`Cart/AddItem?gameId=${gameId}`);
+                if (response.status == 200) 
+                {
+
+
+                    var result = await response.json();
+                    console.log(result);
+                    var cartCountElements = document.getElementById("cartCount");
+                    cartCountElements.innerHTML = result;
+                }
+
+            }
+            catch (err) 
+            { 
+                console.log(err);
+            }
+
+        }
+
+
+    </script>
+}
+
