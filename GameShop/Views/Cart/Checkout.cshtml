@@ -1,0 +1,53 @@
+﻿@model GameShop.Models.CheckoutModel
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+<h1>Checkout</h1>
+<form asp-action="Checkout" method="post>
+    <d<h2>Checkout</h2>
+<form asp-action="Checkout">
+    <div class="py-2">
+        <label asp-for="Name">Imię*</label>
+        <input type="text" class="form-control" asp-for="Name" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="py-2">
+        <label asp-for="EmailAddress">Email*</label>
+        <input type="text" class="form-control" asp-for="EmailAddress" />
+        <span asp-validation-for="EmailAddress" class="text-danger"></span>
+
+    </div>
+
+    <div class="py-2">
+        <label asp-for="Number">Numer telefonu*</label>
+        <input type="text" class="form-control" asp-for="Number" />
+        <span asp-validation-for="Number" class="text-danger"></span>
+    </div>
+
+
+    <div class="py-2">
+        <label asp-for="Address">Adres*</label>
+        <textarea class="form-control" asp-for="Address" rows="5"> </textarea>
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+
+    <div class="py-2">
+        <span class="mr-2">Płatność*</span>
+        <select asp-for="PaymentMethod" class="form-control">
+            <option value="">Wybierz opcje płatności</option>
+                    @foreach (var method in Enum.GetValues(typeof(GameShop.Constants.PaymentMethods)))
+                    {
+                    <option value="@method.ToString()">@method.ToString()</option>
+
+                    }
+        </select>
+        <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+    </div>
+
+    <div class="py-2">
+        <button type="submit" c class="btn btn-info">Dalej</button>
+
+    </div>
+</form>

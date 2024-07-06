@@ -13,6 +13,8 @@ namespace GameShop.Models
         public int GameId { get; set; }
         [Required]
         public int Quantity { get; set; }
+        [Required]
+        public double UnitPrice { get; set; }
         public Game Game { get; set; }
         public ShoppingCart ShoppingCart { get; set; }
     }

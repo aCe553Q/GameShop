@@ -15,7 +15,7 @@ namespace GameShop.Data
         public DbSet<ShoppingCart>  ShoppingCarts { get; set; }
         public DbSet<CartDetail>  CartDetails { get; set; }
         public DbSet<Order>  Orders { get; set; }
-        public DbSet<OrderDetail>  OrdersDetails { get; set; }
+        public DbSet<OrderDetail>  OrderDetails { get; set; }
         public DbSet<OrderStatus>  OrderStatuses { get; set; }
     }
 }

@@ -47,11 +47,14 @@ namespace GameShop.Repositories
                 }
                 else
                 {
+                    var game = _db.Games.Find(gameId);
                     cartItem = new CartDetail
                     {
+
                         GameId = gameId,
                         ShoppingCartId = cart.Id,
-                        Quantity = quantity
+                        Quantity = quantity,
+                        UnitPrice = game.Price
                     };
                     _db.CartDetails.Add(cartItem);
                 }
@@ -150,7 +153,7 @@ namespace GameShop.Repositories
             return data.Count;
         }
 
-        public async Task DoCheckout()
+        public async Task<bool> DoCheckout(CheckoutModel model)
         {
             using var transaction = _db.Database.BeginTransaction();
             try
@@ -167,18 +170,46 @@ namespace GameShop.Repositories
                                     .Where(a=> a.ShoppingCartId == cart.Id).ToList();
                 if(cartDetail.Count == 0)
                     throw new Exception("Cart is empty");
+                var pendingRecord = _db.OrderStatuses.FirstOrDefault
+                                    (s => s.StatusName == "Pending");
+                if (pendingRecord is null)
+                    throw new Exception("Order status does not have Pending status");
+
                 var order = new Order
                 {
                     UserId = userId,
                     CreateDate = DateTime.Now,
-                    OrderStatus = 1, //pending order
+                    Name = model.Name,
+                    Email = model.EmailAddress,
+                    Number = model.Number,
+                    PaymentMethod = model.PaymentMethod,
+                    Address = model.Address,
+                    IsPaid = false,
+                    OrderStatusId = pendingRecord.Id, //pending order
                 };
-                    
+                _db.Orders.Add(order);
+                _db.SaveChanges();
+                foreach(var item in cartDetail)
+                {
+                    var orderDetail = new OrderDetail
+                    {
+                        GameId = item.GameId,
+                        OrderId = order.Id,
+                        Quantity = item.Quantity,
+                        UnitPrice = item.UnitPrice
+                    };
+                    _db.OrderDetails.Add(orderDetail);
+                }
+                _db.SaveChanges();
+                //remove cartdetails
+                _db.CartDetails.RemoveRange(cartDetail);
+                transaction.Commit();
+                return true;
                 
             }
             catch (Exception ex)
             {
-
+                return false;
             }
         }
 

@@ -11,5 +11,7 @@
 
         Task<ShoppingCart> GetCart(string userId);
 
+        Task<bool> DoCheckout(CheckoutModel model);
+
     }
 }
