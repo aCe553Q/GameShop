@@ -22,10 +22,10 @@
             <div class="input-group-text"></div>
             <input type="text" class="form-control" value="@Model.STerm" id="sterm" name="sterm" placeholder="Szukaj po tytule" </input>
         </div>
-
+        
 
     </div>
-
+    
   <div class="col-12">
     <button type="submit" class="btn btn-primary">Szukaj</button>
     <a href="/Home/Index" class="btn btn-dark">Resetuj</a>
@@ -61,32 +61,30 @@
 </div>
     }
 </div>
-@section Scripts
-{
+@section Scripts {
     <script>
-        async function add(gameId)
-        {
-            try 
-            {
-                var response = await fetch(`Cart/AddItem?gameId=${gameId}`);
-                if (response.status == 200) 
-                {
-
-
-                    var result = await response.json();
-                    var cartCountElements = document.getElementById("cartCount");
-                    cartCountElements.innerHTML = result;
-                }
-
+        async function add(gameId) {
+            var usernameEl = document.getElementById("username");
+            if (usernameEl == null) {
+                window.location.href = "/Identity/Account/Login";
+                //var username=usernameEl.innerText;
+                //  if(username.length<1){
+                //      window.location.href="/Identity/Account/Login";
+                //  }
             }
-            catch (err) 
-            { 
+            try {
+                var response = await fetch(`/Cart/AddItem?gameId=${gameId}`);
+                if (response.status == 200) {
+                    var result = await response.json();
+                    var cartCountEl = document.getElementById("cartCount");
+                    cartCountEl.innerHTML = result;
+                    window.location.href = "#cartCount";
+                }
+            }
+            catch (err) {
                 console.log(err);
             }
-
         }
-
-
     </script>
 }
 

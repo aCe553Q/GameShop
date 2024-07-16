@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GameShop.Models
+namespace GameShop.Models.DTOs
 {
     public class CheckoutModel
     {
@@ -11,7 +11,7 @@ namespace GameShop.Models
         [Required]
         [MaxLength(30)]
         [EmailAddress]
-        public string? EmailAddress { get; set; }
+        public string? Email { get; set; }
 
         [Required]
         public string? Number { get; set; }

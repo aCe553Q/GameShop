@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using System.Linq.Expressions;
@@ -19,95 +20,79 @@ namespace GameShop.Repositories
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<int> AddItem(int gameId, int quantity)
+        public async Task<int> AddItem(int gameId, int qty)
         {
             string userId = GetUserId();
             using var transaction = _db.Database.BeginTransaction();
             try
-            {               
+            {
                 if (string.IsNullOrEmpty(userId))
-
-                    throw new Exception("user is not logged");
-
+                    throw new Exception("user is not logged-in");
                 var cart = await GetCart(userId);
                 if (cart is null)
                 {
-                    cart = new ShoppingCart //added to dataase
+                    cart = new ShoppingCart
                     {
                         UserId = userId
                     };
                     _db.ShoppingCarts.Add(cart);
                 }
                 _db.SaveChanges();
-                var cartItem = _db.CartDetails // Find cart item
-                                .FirstOrDefault(a => a.ShoppingCartId == cart.Id && a.GameId == gameId);
+                // cart detail section
+                var cartItem = _db.CartDetails
+                                  .FirstOrDefault(a => a.ShoppingCartId == cart.Id && a.GameId == gameId);
                 if (cartItem is not null)
                 {
-                    cartItem.Quantity += quantity; //increase quantity
+                    cartItem.Quantity += qty;
                 }
                 else
                 {
                     var game = _db.Games.Find(gameId);
                     cartItem = new CartDetail
                     {
-
                         GameId = gameId,
                         ShoppingCartId = cart.Id,
-                        Quantity = quantity,
-                        UnitPrice = game.Price
+                        Quantity = qty,
+                        UnitPrice = game.Price  // it is a new line after update
                     };
                     _db.CartDetails.Add(cartItem);
                 }
                 _db.SaveChanges();
-                transaction.Commit(); //save to database
-                
+                transaction.Commit();
             }
             catch (Exception ex)
             {
-                
             }
-            var cartItemCount = await GetCartItemCount(userId); // total number of items
+            var cartItemCount = await GetCartItemCount(userId);
             return cartItemCount;
         }
 
+
         public async Task<int> RemoveItem(int gameId)
         {
-            string userId = GetUserId();
             //using var transaction = _db.Database.BeginTransaction();
+            string userId = GetUserId();
             try
             {
                 if (string.IsNullOrEmpty(userId))
-
-                    throw new Exception("user is not logged");
-
+                    throw new Exception("user is not logged-in");
                 var cart = await GetCart(userId);
                 if (cart is null)
-                {
                     throw new Exception("Invalid cart");
-                }
-                _db.SaveChanges();
+                // cart detail section
                 var cartItem = _db.CartDetails
-                                .FirstOrDefault(a => a.ShoppingCartId == cart.Id && a.GameId == gameId);
+                                  .FirstOrDefault(a => a.ShoppingCartId == cart.Id && a.GameId == gameId);
                 if (cartItem is null)
-                {
-                    throw new Exception("No items in cart");
-                }
-
+                    throw new Exception("Not items in cart");
                 else if (cartItem.Quantity == 1)
-                {
                     _db.CartDetails.Remove(cartItem);
-                }
                 else
-                {
                     cartItem.Quantity = cartItem.Quantity - 1;
-                }
                 _db.SaveChanges();
-                // transaction.Commit(); not needed because it's a same cart
-                
             }
             catch (Exception ex)
             {
-                
+
             }
             var cartItemCount = await GetCartItemCount(userId);
             return cartItemCount;
@@ -115,41 +100,35 @@ namespace GameShop.Repositories
 
         public async Task<ShoppingCart> GetUserCart()
         {
-            //query joining tables
             var userId = GetUserId();
-            if(userId== null)
-            {
-                throw new Exception("Invalid userId");
-            }
-            var shoppingCart = await _db.ShoppingCarts.Include(a => a.CartDetails)
-                                                .ThenInclude(a => a.Game)
-                                                .ThenInclude(a => a.Genre)
-                                                .Where(a => a.UserId == userId).FirstOrDefaultAsync();
+            if (userId == null)
+                throw new Exception("Invalid userid");
+            var shoppingCart = await _db.ShoppingCarts
+                                  .Include(a => a.CartDetails)
+                                  .ThenInclude(a => a.Game)
+                                  .ThenInclude(a => a.Genre)
+                                  .Where(a => a.UserId == userId).FirstOrDefaultAsync();
             return shoppingCart;
 
         }
-
-
-        public  async Task<ShoppingCart> GetCart(string userId)
+        public async Task<ShoppingCart> GetCart(string userId)
         {
             var cart = await _db.ShoppingCarts.FirstOrDefaultAsync(x => x.UserId == userId);
             return cart;
-
         }
 
-        public async Task<int> GetCartItemCount(string userId="")
+        public async Task<int> GetCartItemCount(string userId = "")
         {
-            //no userId
-            if(string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(userId)) // updated line
             {
                 userId = GetUserId();
             }
             var data = await (from cart in _db.ShoppingCarts
                               join cartDetail in _db.CartDetails
-                              on cart.Id equals cartDetail.ShoppingCartId // changed
-                              where cart.UserId == userId
+                              on cart.Id equals cartDetail.ShoppingCartId
+                              where cart.UserId == userId // updated line
                               select new { cartDetail.Id }
-                              ).ToListAsync();
+                        ).ToListAsync();
             return data.Count;
         }
 
@@ -158,38 +137,36 @@ namespace GameShop.Repositories
             using var transaction = _db.Database.BeginTransaction();
             try
             {
-                //order orderdetail
-                //remove data cartdetail
+                // logic
+                // move data from cartDetail to order and order detail then we will remove cart detail
                 var userId = GetUserId();
-                if(string.IsNullOrEmpty(userId) )               
-                    throw new Exception("User is not logged");
-                    var cart = await GetCart(userId);
-                    if(cart is null)
-                    throw new Exception("Invalid Cart");
-                    var cartDetail = _db.CartDetails
-                                    .Where(a=> a.ShoppingCartId == cart.Id).ToList();
-                if(cartDetail.Count == 0)
+                if (string.IsNullOrEmpty(userId))
+                    throw new Exception("User is not logged-in");
+                var cart = await GetCart(userId);
+                if (cart is null)
+                    throw new Exception("Invalid cart");
+                var cartDetail = _db.CartDetails
+                                    .Where(a => a.ShoppingCartId == cart.Id).ToList();
+                if (cartDetail.Count == 0)
                     throw new Exception("Cart is empty");
-                var pendingRecord = _db.OrderStatuses.FirstOrDefault
-                                    (s => s.StatusName == "Pending");
+                var pendingRecord = _db.orderStatuses.FirstOrDefault(s => s.StatusName == "Pending");
                 if (pendingRecord is null)
                     throw new Exception("Order status does not have Pending status");
-
                 var order = new Order
                 {
                     UserId = userId,
-                    CreateDate = DateTime.Now,
+                    CreateDate = DateTime.UtcNow,
                     Name = model.Name,
-                    Email = model.EmailAddress,
+                    Email = model.Email,
                     Number = model.Number,
                     PaymentMethod = model.PaymentMethod,
                     Address = model.Address,
                     IsPaid = false,
-                    OrderStatusId = pendingRecord.Id, //pending order
+                    OrderStatusId = pendingRecord.Id
                 };
                 _db.Orders.Add(order);
                 _db.SaveChanges();
-                foreach(var item in cartDetail)
+                foreach (var item in cartDetail)
                 {
                     var orderDetail = new OrderDetail
                     {
@@ -201,14 +178,16 @@ namespace GameShop.Repositories
                     _db.OrderDetails.Add(orderDetail);
                 }
                 _db.SaveChanges();
-                //remove cartdetails
+
+                // removing the cartdetails
                 _db.CartDetails.RemoveRange(cartDetail);
+                _db.SaveChanges();
                 transaction.Commit();
                 return true;
-                
             }
             catch (Exception ex)
             {
+
                 return false;
             }
         }
@@ -219,7 +198,6 @@ namespace GameShop.Repositories
             string userId = _userManager.GetUserId(principal);
             return userId;
         }
-
 
 
     }

@@ -22,7 +22,7 @@ namespace GameShop.Controllers
             }
                 return RedirectToAction("GetUserCart");
                 
-
+            
             
         } 
         public async Task<IActionResult> RemoveItem(int gameId)
@@ -49,13 +49,13 @@ namespace GameShop.Controllers
         [HttpPost]
         public async Task<IActionResult> Checkout(CheckoutModel model)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return View(model);
             bool isCheckedOut = await _cartRepository.DoCheckout(model);
             if (!isCheckedOut)
                 return RedirectToAction(nameof(OrderFailed));
-                return RedirectToAction(nameof(OrderSuccess));
-                
+            return RedirectToAction(nameof(OrderSuccess));
+
         }
         
         public IActionResult OrderSuccess()

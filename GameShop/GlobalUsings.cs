@@ -2,3 +2,4 @@
 global using GameShop.Models;
 global using GameShop.Models.DTOs;
 global using GameShop.Repositories;
+global using GameShop.Constants;

@@ -1,2 +1,74 @@
-﻿@{
+﻿@model IEnumerable<Order>
+@{
 }
+<div style="width:100%" class="mt-2">
+    <a href="/Identity/Account/Manage" class="btn btn-primary my-2">Cofnij</a>
+
+    <h4>Moje zamówienia</h4>
+    @if (Model != null && Model.Count() > 0)
+    {
+        <table class="table table-striped">
+            <tr>
+                <th>Data zamówienia</th>
+                <th>Status zamówienia</th>
+            </tr>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.CreateDate.ToString("dd-MM-yyyy")</td>
+                    <td>@order.OrderStatus.StatusName</td>
+                </tr>
+                @if (order.OrderDetail != null && order.OrderDetail.Count > 0)
+                {
+                    <tr>
+                        <td>
+                            <table class="table table-striped">
+                                <tr>
+                                    <td>
+                                        W sumie:
+                                    </td>
+                                    <td>
+                                        @(order.OrderDetail.Select(item => item.Game.Price * item.Quantity).Sum())
+                                        PLN
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Gra</th>
+                                    <th>Zdjęcie</th>
+                                    <th>Gatunek</th>
+                                    <th>Cena za sztuke(PLN)</th>
+                                    <th>Cena końcowa</th>
+                                </tr>
+                                @foreach (var item in order.OrderDetail)
+                                {
+                                    <tr>
+                                        <td>@item.Game.GameName</td>
+                                        <td>
+                                            @if (string.IsNullOrEmpty(item.Game.Image))
+                                            {
+                                                <img src="/images/NoImage.png" style="width:80px;height:100px" />
+                                            }
+                                            else
+                                            {
+                                                <img src="/images/@item.Game.Image" style="width:80px;height:100px" />
+                                            }
+                                        </td>
+                                        <td>@item.Game.Genre.GenreName</td>
+                                        <td>@item.Game.Price X @item.Quantity szt</td>
+                                        <td> @(item.Game.Price * item.Quantity) PLN </td>
+                                    </tr>
+                                }
+                            </table>
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+
+    }
+    else
+    {
+        <h5>No orders</h5>
+    }
+</div>
