@@ -1,0 +1,50 @@
+﻿@model IEnumerable<Game>
+@{
+    Layout = "_AdminLayout";
+}
+
+<h2>Gry</h2>
+
+<a asp-action="AddGame" asp-controller="Game" class="btn btn-primary">Dodaj grę</a>
+
+@if(Model?.Count()>0)
+{
+    <table class="table table-striped my-2">
+        <tr>
+            <th>Zdjęcie</th>
+            <th>Gra</th>
+            <th>Autor</th>
+            <th>Gatunek</th>
+            <th>Cena</th>
+            <th>Akcje</th>
+        </tr>
+
+        @foreach (var game in Model)
+        {
+            <tr>
+                <td>
+                    @if(string.IsNullOrWhiteSpace(game.Image))
+                    {
+                        <img src="/css/img/noimg.jpg" style="width:80px;height:100px" alt="game image" />
+                    }
+                    else
+                    {
+                        <img src="/css/img/@game.Image" style="width:80px;height:100px" alt="game image" />
+                    }
+                </td>
+                <td>@game.GameName</td>
+                <td>@game.AuthorName</td>
+                <td>@game.Genre.GenreName</td>
+                <td>@game.Price PLN</td>
+                <td>
+                    <a asp-action="UpdateGame" asp-controller="Game" asp-route-id="@game.Id" class="btn btn-success">Edytuj</a>
+                    <a asp-action="DeleteGame" asp-controller="Game" asp-route-id="@game.Id" class="btn btn-danger" onclick="return window.confirm('Jesteś pewny?')">Usuń</a>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <h3>No records</h3>
+}

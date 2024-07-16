@@ -19,7 +19,7 @@
             <td>@genre.GenreName</td>
             <td>
                 <a asp-action="UpdateGenre" asp-controller="Genre" asp-route-id="@genre.Id" class="btn btn-success">Edytuj</a>
-                <a asp-action="DeleteGenre" asp-controller="Genre" asp-route-id="@genre.Id" class="btn btn-danger" onclick="return window.confirm('Are you sure?')">Usuń</a>
+                <a asp-action="DeleteGenre" asp-controller="Genre" asp-route-id="@genre.Id" class="btn btn-danger" onclick="return window.confirm('Jesteś pewny?')">Usuń</a>
             </td>
         </tr>
     }

@@ -1,7 +1,9 @@
 using GameShop;
 using GameShop.Data;
+using GameShop.Shared;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static GameShop.Shared.IFileService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,9 @@ builder.Services.AddTransient<IHomeRepository, HomeRepository>();
 builder.Services.AddTransient<ICartRepository, CartRepository>();
 builder.Services.AddTransient<IUserOrderRepository, UserOrderRepository>();
 builder.Services.AddTransient<IGenreRepository, GenreRepository>();
+builder.Services.AddTransient<IFileService, FileService>();
+builder.Services.AddTransient<IGameRepository, GameRepository>();
+
 
 
 var app = builder.Build();
